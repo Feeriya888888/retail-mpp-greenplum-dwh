@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  greenplum:
+    image: datagrip/greenplum:6.8
+    container_name: gp_master
+    hostname: mdw
+    ports:
+      - "5432:5432"
+      - "28080:28080"
+    environment:
+      - GP_USER=gpadmin
+      - GP_PASSWORD=gpadmin
+      - GP_DATABASE=retail_dwh
+    shm_size: '2gb'
+    volumes:
+      - gp_data:/gpdata
+      - ./:/workspace
+    healthcheck:
+      test: ["CMD-SHELL", "su - gpadmin -c 'pg_isready -d retail_dwh'"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  gp_data:
